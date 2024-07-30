@@ -40,3 +40,5 @@ app.*.map.json
 /lib/controllers/controller_panel_controller.dart
 /lib/controllers/general_controller.dart
 /lib/controllers/home_controller.dart
+
+*general*
