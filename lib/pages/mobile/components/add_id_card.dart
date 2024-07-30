@@ -119,8 +119,8 @@ class _AddNewOrderBottomSheetState extends State<AddIdCard> {
                         await controller.addUpdateEmployee();
                         StaticValue.userData!.userIDCardPath = controller.user.value.userIDCardPath;
                         generalController.imageIdPath.value = StaticValue.userData!.userIDCardPath!;
-                        if(GetStorage().read("user")!= null){
-                          await GetStorage().write("user",StaticValue.userData!.toMapForSave());
+                        if(GetStorage().read("its_user")!= null){
+                          await GetStorage().write("its_user",StaticValue.userData!.toMapForSave());
                         }
                     },
                     child: Text(

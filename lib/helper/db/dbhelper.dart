@@ -10,7 +10,7 @@ class DbHelper extends DbHelper2 {
   static MysqlUtils db = MysqlUtils(
     settings: {
       // 'host': "51.20.87.43",
-      'host': "192.168.43.200",//"srv1049.hstgr.io",//"193.203.168.54",
+      'host': "192.168.0.200",//"srv1049.hstgr.io",//"193.203.168.54",
       'port': 3306,
       'user': "administrator",//"u490706815_admin",//"administrator",//"u689838604_smartmate",//"u490706815_administrator",
       // 'password': 'mEro@mriam#medo1',

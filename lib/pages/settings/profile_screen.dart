@@ -119,8 +119,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
                               await DefaultCacheManager().removeFile(StaticValue.serverPath! + StaticValue.userData!.userImagePath!);
                               // await DefaultCacheManager().emptyCache();
                               generalController.imagePath.value = StaticValue.userData!.userImagePath!;
-                              if(GetStorage().read("user")!= null){
-                                await GetStorage().write("user",StaticValue.userData!.toMapForSave());
+                              if(GetStorage().read("its_user")!= null){
+                                await GetStorage().write("its_user",StaticValue.userData!.toMapForSave());
                               }
                             }
                           }, icon: const Icon(Icons.edit,color: Colors.white,))))

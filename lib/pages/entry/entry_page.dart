@@ -126,7 +126,7 @@ void callbackDispatcher() async{
 Future<void> getNotifications()async{
  GeneralHelper db = GeneralHelper();
   await GetStorage.init();
-  Map<String, dynamic>? u = GetStorage().read("user");
+  Map<String, dynamic>? u = GetStorage().read("its_user");
   // for save last notifications revived
   if(u != null){
     UserModel user = UserModel.fromMap(u);

@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:get/get.dart' hide Trans;
 import 'package:flutter/material.dart';
+import 'package:its_system/controllers/general_controller.dart';
 import 'package:its_system/models/state_enum.dart';
+import 'package:its_system/pages/no_internet_screen.dart';
 import 'package:localize_and_translate/localize_and_translate.dart';
 import 'package:its_system/helper/db/general_helper.dart';
 import 'package:its_system/helper/device_information.dart';
@@ -24,61 +26,6 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
   SharedPreferences pref = await SharedPreferences.getInstance();
-  await GetStorage.init();
-  GetStorage().writeIfNull('darkMode', false);
-  GetStorage().writeIfNull('paper_size', 57);
-
-  // String key2 = GetStorage().read("key2") ?? "";
-  StaticValue.systemType = GetStorage().read("TYEP") ?? 1;
-  if(StaticValue.systemType == 1){  
-        StaticValue.serverName = GetStorage().read("server_name")??(await rootBundle.loadString("assets/serv")).toString().trim();
-        StaticValue.userName = GetStorage().read("user_name")??"administrator";
-        StaticValue.password = GetStorage().read("password")??"mero@mriam#medo";
-        StaticValue.deviceName = await DeviceInformationHelper.getDeviceNameForWindows();
-      }
-  // for change connecting string by user
-  
-  Map<String, dynamic>? u = GetStorage().read("user");
-  Map<String, dynamic>? s = GetStorage().read("qr_style");
-  // for save last notifications revived
-  if(u != null){
-    StaticValue.userData = UserModel.fromMap(u);
-  }
-  else{
-    StaticValue.userData = UserModel().initialize();
-  }
-  if(s != null){
-    StaticValue.qrStyle = QRStyleModel.fromMap(s);
-  }
-  else{
-    StaticValue.qrStyle = QRStyleModel().initialize();
-  }
-    // if(productKey1 == "" &&productKey2 == ""&&key1 == "" &&key2 == ""){
-    if(StaticValue.userData!.userId == 0){
-      isLogin = true;
-    }else{
-      // StaticValue.productKey2 = productKey2; 
-        await GeneralHelper().update(withMassage: false, tableName: 'users', primaryKey: 'USR_ID', primaryKeyValue: StaticValue.userData!.userId, items: {"USR_LAST_CONNECTED":DateTime.now()});
-        if(StaticValue.userData!.userState == States.INACTIVE){
-            final e = await GeneralHelper().getByIdAsMap(" SELECT * FROM users as u "
-              // " INNER JOIN institutions as c ON c.INST_ID = u.INST_ID "
-              // " INNER JOIN municipalities as ci ON c.MUN_ID = ci.MUN_ID "
-              // " INNER JOIN cities as co ON co.CTY_ID = ci.CTY_ID "
-              " WHERE USR_ID = ${StaticValue.userData!.userId}");
-            UserModel u = UserModel.fromMap(e);
-            StaticValue.userData = u;
-            if(GetStorage().read("user")!= null){
-              await GetStorage().write("user",StaticValue.userData!.toMapForSave());
-            }
-        }
-      isLogin = false;
-        if(StaticValue.userData!.userType == UserTypes.CITIZEN || StaticValue.userData!.userType == UserTypes.GUEST){
-          isAdmin = false;
-        }
-        else{
-          isAdmin = true;
-        }
-    }
 
   await translator.init(
     localeType: LocalizationDefaultType.device,
@@ -113,6 +60,110 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme(),
       darkTheme: AppTheme.darkTheme(),
       home: isLogin ? const EntryPage() : isAdmin ? const HomeScreen() : const HomeScreenForMoble()
+    );
+  }
+}
+
+
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  Future? myFun;
+
+  @override
+  void initState() {
+    super.initState();
+    myFun = initialize();
+  }
+  Future? initialize()async{
+ await GetStorage.init();
+  GetStorage().writeIfNull('darkMode', false);
+  GetStorage().writeIfNull('paper_size', 57);
+
+  // String key2 = GetStorage().read("key2") ?? "";
+  StaticValue.systemType = GetStorage().read("TYEP") ?? 1;
+  if(StaticValue.systemType == 1){  
+        StaticValue.serverName = GetStorage().read("server_name")??(await rootBundle.loadString("assets/serv")).toString().trim();
+        StaticValue.userName = GetStorage().read("user_name")??"administrator";
+        StaticValue.password = GetStorage().read("password")??"mero@mriam#medo";
+        StaticValue.deviceName = await DeviceInformationHelper.getDeviceNameForWindows();
+      }
+  // for change connecting string by user
+  
+  Map<String, dynamic>? u = GetStorage().read("its_user");
+  Map<String, dynamic>? s = GetStorage().read("qr_style");
+  // for save last notifications revived
+  if(u != null){
+    StaticValue.userData = UserModel.fromMap(u);
+  }
+  else{
+    StaticValue.userData = UserModel().initialize();
+  }
+  if(s != null){
+    StaticValue.qrStyle = QRStyleModel.fromMap(s);
+  }
+  else{
+    StaticValue.qrStyle = QRStyleModel().initialize();
+  }
+    // if(productKey1 == "" &&productKey2 == ""&&key1 == "" &&key2 == ""){
+    if(StaticValue.userData!.userId == 0){
+      isLogin = true;
+      Get.offAll(()=>const EntryPage());
+    }else{
+      // StaticValue.productKey2 = productKey2; 
+        var result = await GeneralHelper().update(withMassage: false, tableName: 'users', primaryKey: 'USR_ID', primaryKeyValue: StaticValue.userData!.userId, items: {"USR_LAST_CONNECTED":DateTime.now()});
+        if(result == 0){
+          print("$result AAAAAA ");
+          Get.offAll(()=>NoInternetScreen());
+        }
+        if(StaticValue.userData!.userState == States.INACTIVE){
+            final e = await GeneralHelper().getByIdAsMap(" SELECT * FROM users as u "
+              // " INNER JOIN institutions as c ON c.INST_ID = u.INST_ID "
+              // " INNER JOIN municipalities as ci ON c.MUN_ID = ci.MUN_ID "
+              // " INNER JOIN cities as co ON co.CTY_ID = ci.CTY_ID "
+              " WHERE USR_ID = ${StaticValue.userData!.userId}");
+            UserModel u = UserModel.fromMap(e);
+            StaticValue.userData = u;
+            if(GetStorage().read("its_user")!= null){
+              await GetStorage().write("its_user",StaticValue.userData!.toMapForSave());
+            }
+        }
+      isLogin = false;
+        if(StaticValue.userData!.userType == UserTypes.CITIZEN || StaticValue.userData!.userType == UserTypes.GUEST){
+          await Get.put(GeneralController(),permanent: true);
+          Get.offAll(()=>const HomeScreenForMoble());
+        }
+        else{
+          // isAdmin = true;
+          await Get.put(GeneralController(),permanent: true);
+          Get.offAll(()=>const HomeScreen());
+        }
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: myFun,
+      builder: (context,snapshot) {
+        // if(snapshot.connectionState == ConnectionState.waiting){
+        // }
+        // else{
+        //   print(snapshot.data);
+        //   if(snapshot.data == "HOME"){
+        //     return const HomePage();
+        //   }
+        //   return const EntryScreen();
+        // }
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+      }
     );
   }
 }

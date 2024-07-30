@@ -141,9 +141,9 @@ class _PersonInformationState extends State<PersonInformation> {
                             StaticValue.userData = controller.user.value;
                           }
                           StaticValue.userData = controller.user.value;
-                            if(GetStorage().read("user")!= null){
+                            if(GetStorage().read("its_user")!= null){
                               // await GetStorage().remove("user");
-                              await GetStorage().write("user",StaticValue.userData!.toMapForSave());
+                              await GetStorage().write("its_user",StaticValue.userData!.toMapForSave());
                             }
                         }
                       },

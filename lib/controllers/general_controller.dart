@@ -18,7 +18,7 @@ import 'package:its_system/models/setting_model.dart';
 import 'package:its_system/models/user_model.dart';
 import 'package:its_system/statics_values.dart';
 
-class GeneralController extends GetxController {
+class GeneralController extends GetxService {
 
   RxString appBarTitle = "servicesManagement".tr().obs;
   RxInt mainPageIndex = 0.obs;

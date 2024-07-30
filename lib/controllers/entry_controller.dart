@@ -9,6 +9,7 @@ import 'package:its_system/pages/home/home_screen.dart';
 import 'package:its_system/models/state_enum.dart';
 import 'package:its_system/models/user_model.dart';
 import 'package:its_system/pages/home/home_screen_for_mobile.dart';
+import 'package:its_system/pages/no_internet_screen.dart';
 import 'package:its_system/statics_values.dart';
 import 'package:localize_and_translate/localize_and_translate.dart';
 
@@ -57,7 +58,7 @@ class EntryController extends GetxController {
         cities.add(CityModel.fromMap(value[i]).obs);
       }
       selectedCity.value = cities.first.value.cityId!;
-    });
+    }).timeout(Duration(seconds: 10)).onError((error, stackTrace) => Get.offAll(()=>NoInternetScreen()));
   }
 
   // onClickEnter()async{
@@ -111,7 +112,7 @@ class EntryController extends GetxController {
         if(rememberMe.value){
             dynamic s = await db.getByIdAsMap(
               "SELECT * FROM qr_styles ${StaticValue.userData!.userType == UserTypes.SUPER_ADMIN ? "" : " WHERE INST_ID = ${StaticValue.userData!.institution!.institutionId}"}");
-            GetStorage().write("user", e);
+            GetStorage().write("its_user", e);
           if (s != null && s is! String) {
             StaticValue.qrStyle = QRStyleModel.fromMap(s);
             GetStorage().write("qr_style", s);
@@ -200,7 +201,7 @@ class EntryController extends GetxController {
       user.value.userState = States.INACTIVE;
       user.value.userType = UserTypes.GUEST;
       user.value.userId = await db.createNew("users", await user.value.toMap(false));
-      GetStorage().write("user", user.value.toMapForSave());
+      GetStorage().write("its_user", user.value.toMapForSave());
       if(user.value.userId! > 0){
         StaticValue.userData = user.value;
         Get.off(const HomeScreenForMoble());
